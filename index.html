@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Map | Карта знаний</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Панель инструментов -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <button id="addNodeBtn" class="btn btn-primary" title="Добавить узел">
+                    <i class="fas fa-plus-circle"></i> Узел
+                </button>
+                <button id="addEdgeBtn" class="btn btn-secondary" title="Добавить связь">
+                    <i class="fas fa-link"></i> Связь
+                </button>
+                <button id="deleteBtn" class="btn btn-danger" title="Удалить выбранное">
+                    <i class="fas fa-trash"></i> Удалить
+                </button>
+                <div class="separator"></div>
+                <button id="autoLayoutBtn" class="btn" title="Авто-расположение">
+                    <i class="fas fa-project-diagram"></i> Авто-расположение
+                </button>
+            </div>
+            
+            <div class="toolbar-center">
+                <h1 class="app-title">🧠 Карта знаний</h1>
+            </div>
+            
+            <div class="toolbar-right">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Поиск узлов...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <button id="saveBtn" class="btn btn-success" title="Сохранить">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button id="exportBtn" class="btn" title="Экспорт">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button id="themeToggle" class="btn" title="Сменить тему">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Основной контейнер -->
+        <div class="main-container">
+            <!-- Боковая панель -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-info-circle"></i> Информация</h3>
+                    <div class="stats">
+                        <p>Узлов: <span id="nodeCount">0</span></p>
+                        <p>Связей: <span id="edgeCount">0</span></p>
+                        <p>Выбрано: <span id="selectedCount">0</span></p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-sliders-h"></i> Настройки</h3>
+                    <div class="form-group">
+                        <label>Цвет фона:</label>
+                        <input type="color" id="bgColor" value="#f8f9fa">
+                    </div>
+                    <div class="form-group">
+                        <label>Размер узлов:</label>
+                        <input type="range" id="nodeSize" min="20" max="100" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Сила притяжения:</label>
+                        <input type="range" id="forceStrength" min="1" max="10" value="5">
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-tags"></i> Теги</h3>
+                    <div class="tags-container" id="tagsContainer">
+                        <!-- Теги будут добавляться динамически -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Рабочая область -->
+            <main class="workspace">
+                <canvas id="graphCanvas"></canvas>
+                
+                <!-- Контекстное меню -->
+                <div id="contextMenu" class="context-menu">
+                    <ul>
+                        <li data-action="edit"><i class="fas fa-edit"></i> Редактировать</li>
+                        <li data-action="changeColor"><i class="fas fa-palette"></i> Изменить цвет</li>
+                        <li data-action="addTag"><i class="fas fa-tag"></i> Добавить тег</li>
+                        <li class="separator"></li>
+                        <li data-action="delete"><i class="fas fa-trash"></i> Удалить</li>
+                    </ul>
+                </div>
+                
+                <!-- Модальное окно редактора узла -->
+                <div id="nodeModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Редактирование узла</h3>
+                            <button class="close-btn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Заголовок:</label>
+                                <input type="text" id="nodeTitle" placeholder="Введите заголовок...">
+                            </div>
+                            <div class="form-group">
+                                <label>Содержимое:</label>
+                                <textarea id="nodeContent" rows="6" placeholder="Введите текст..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Цвет:</label>
+                                <input type="color" id="nodeColor" value="#4a6fa5">
+                            </div>
+                            <div class="form-group">
+                                <label>Теги (через запятую):</label>
+                                <input type="text" id="nodeTags" placeholder="js, проект, идея">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancelBtn" class="btn">Отмена</button>
+                            <button id="saveNodeBtn" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Статус бар -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span id="statusMessage">Готов к работе</span>
+            </div>
+            <div class="status-right">
+                <span id="cursorPosition">x: 0, y: 0</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Загрузка модулей -->
+    <script type="module" src="modules/Node.js"></script>
+    <script type="module" src="modules/Edge.js"></script>
+    <script type="module" src="modules/Graph.js"></script>
+    <script type="module" src="modules/Storage.js"></script>
+    <script type="module" src="modules/UI.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

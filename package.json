@@ -1,0 +1,23 @@
+{
+  "name": "knowledge-map",
+  "version": "1.0.0",
+  "description": "Интерактивная карта знаний для организации и связи идей",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx live-server --port=3000",
+    "build": "echo 'Build not configured'",
+    "test": "echo 'No tests yet'"
+  },
+  "keywords": [
+    "knowledge-map",
+    "graph",
+    "visualization",
+    "mind-map"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
